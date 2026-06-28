@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.xirang_tool_store/
+runs/
+.pytest_cache/
+*.log

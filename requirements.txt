@@ -1,0 +1,14 @@
+# XiRang 运行依赖
+fastapi>=0.110
+uvicorn[standard]>=0.27
+httpx>=0.27
+pydantic>=2.0
+
+# GPU 监控（可选；无 GPU 时自动降级）
+pynvml>=11.5
+
+# 出图
+matplotlib>=3.7
+
+# 测试
+pytest>=7.4
