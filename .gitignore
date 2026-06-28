@@ -1,0 +1,22 @@
+# 外部依赖仓库 (vllm/openclaw)，由 scripts/setup_third_party.sh 拉取，不纳入本仓库
+third_party/vllm/
+third_party/openclaw/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# 运行产物
+runs/
+.xirang_tool_store/
+.benchmarks/
+.pytest_cache/
+*.log
+
+# Node (openclaw 构建产物，若在仓库内构建)
+node_modules/
+dist/
