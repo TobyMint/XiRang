@@ -36,3 +36,6 @@ runs/
 .DS_Store
 .idea/
 .vscode/
+
+# diag 原始抓包(大、可重建)，保留实验图
+diag/captures/capture-*.jsonl
