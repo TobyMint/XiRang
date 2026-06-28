@@ -1,22 +1,38 @@
-# 外部依赖仓库 (vllm/openclaw)，由 scripts/setup_third_party.sh 拉取，不纳入本仓库
-third_party/vllm/
-third_party/openclaw/
+# === third_party (vllm + openclaw) 源码已入库，但派生产物仍需排除 ===
+# 各仓库自带 .gitignore 已处理大部分，这里兜底关键产物。
+# vLLM 编译产物 (*.so 运行时需要但太大不入库；*.o/.deps/build/ 中间产物)
+third_party/vllm/vllm/*.so
+third_party/vllm/vllm/**/*.so
+third_party/vllm/vllm_flash_attn/*.so
+third_party/vllm/build/
+third_party/vllm/.deps/
+third_party/vllm/.triton/
+third_party/vllm/vllm/_version.py
+# OpenClaw 构建产物 (pnpm install/build 产生，可重建)
+third_party/openclaw/node_modules/
+third_party/openclaw/**/node_modules/
+third_party/openclaw/dist/
+third_party/openclaw/dist-runtime/
+third_party/openclaw/.artifacts/
+third_party/openclaw/.pnpm-store/
 
-# Python
+# 通用 Python
 __pycache__/
 *.py[cod]
+*$py.class
 *.egg-info/
 .venv/
 venv/
 .env
 
-# 运行产物
+# XiRang 自身运行产物
 runs/
 .xirang_tool_store/
 .benchmarks/
 .pytest_cache/
 *.log
 
-# Node (openclaw 构建产物，若在仓库内构建)
-node_modules/
-dist/
+# 编辑器/系统
+.DS_Store
+.idea/
+.vscode/
