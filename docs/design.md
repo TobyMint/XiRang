@@ -18,6 +18,10 @@ Agent 框架 (多轮/工具调用/分支)
 
 **v0 不魔改 vLLM**，而是做一个 HTTP proxy，拦截 `/v1/chat/completions`，在转发前完成内存优化。目标：先证明 *naive Agent + naive vLLM* 会显存持续上涨、延迟变高、甚至 OOM；加上 XiRang 后任务成功率基本不变，但显存峰值、KV Cache 占用、TTFT 下降。
 
+### 外部依赖隔离
+
+vLLM 等外部仓库统一放在顶层 `third_party/`（整目录 gitignore，由 `scripts/setup_third_party.sh` 按固定版本拉取），与 XiRang 自身代码物理隔离。后续接入 OpenClaw 时同样作为 `third_party/openclaw/` 一个子目录，不改动 XiRang 主结构。模型统一在 `/data/models/`（当前 `Qwen3-4B`），不纳入仓库。
+
 ## 2. v0 优化手段（全部在 proxy 侧，确定/近无损）
 
 | 手段 | 模块 | 解决的问题 |

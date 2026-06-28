@@ -36,8 +36,14 @@ python -m benchmarks.run_xirang \
 ### 真实后端（需 GPU + vLLM）
 
 ```bash
-./scripts/start_vllm.sh Qwen/Qwen2.5-1.5B-Instruct   # 终端1
-./scripts/start_xirang.sh                            # 终端2
+# 拉取外部依赖源码（vLLM 等）到 third_party/，可复现
+./scripts/setup_third_party.sh
+# 安装 vLLM 0.10.2（预编译 wheel）
+pip install vllm==0.10.2
+
+# 启动 vLLM（默认用本地 /data/models/Qwen3-4B）
+./scripts/start_vllm.sh            # 终端1
+./scripts/start_xirang.sh          # 终端2
 ./scripts/run_all.sh benchmarks/workloads/long_tool_call.jsonl  # 终端3
 # 结果: runs/compare/
 ```
@@ -76,10 +82,15 @@ XiRang/
 │   ├── run_xirang.py             # 经 proxy（含 --mock 演示）
 │   └── plot_results.py           # 出图对比
 ├── scripts/
+│   ├── setup_third_party.sh      # 拉取外部仓库 (vllm/openclaw) 到 third_party/
 │   ├── start_vllm.sh / start_xirang.sh / run_all.sh
+├── third_party/                  # 外部依赖仓库（gitignored，见 third_party/README.md）
+│   └── vllm/                     # vLLM v0.10.2 源码（由 setup_third_party.sh 拉取）
 └── tests/
     ├── test_rewriter.py / test_lifecycle.py / test_budget.py
 ```
+
+> 模型统一放在 `/data/models/`，当前用 `/data/models/Qwen3-4B`，不纳入仓库。
 
 ## v0 优化手段
 
