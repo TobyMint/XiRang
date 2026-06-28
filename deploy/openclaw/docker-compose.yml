@@ -1,0 +1,34 @@
+# OpenClaw 容器化部署。
+# - vLLM 跑在物理机(卡3, :8001)，不在本 compose 内
+# - OpenClaw 容器复用物理机已 build 的 third_party/openclaw (挂载)，不重新 install/build
+# - 容器经 host.docker.internal 连物理机 vLLM
+# - 用独立的容器配置文件 (OPENCLAW_CONFIG_PATH)，不碰物理机 ~/.openclaw
+#
+# 启动:
+#   cd deploy/openclaw
+#   docker compose run --rm openclaw node openclaw.mjs infer model run --local \
+#       --model vllm/Qwen3-4B --prompt "hi" --thinking off
+#   交互: docker compose run --rm openclaw bash
+
+services:
+  openclaw:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: xirang/openclaw:local
+    container_name: xirang-openclaw
+    volumes:
+      # 物理机已 build 的 OpenClaw 源码 + 依赖 + dist
+      - ../../third_party/openclaw:/app/openclaw:cached
+      # 容器专用配置 (baseUrl 指向 host.docker.internal)
+      - ./openclaw.container.json5:/app/openclaw.container.json5:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - VLLM_API_KEY=vllm-local
+      - OPENCLAW_CONFIG_PATH=/app/openclaw.container.json5
+    working_dir: /app/openclaw
+    stdin_open: true
+    tty: true
+    entrypoint: ["node", "openclaw.mjs"]
+    command: ["--version"]
