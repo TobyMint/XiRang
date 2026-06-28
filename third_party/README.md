@@ -18,19 +18,63 @@
 
 会按固定版本 clone：
 
-| 子目录 | 仓库 | 版本 |
-|---|---|---|
-| `vllm/` | https://github.com/vllm-project/vllm | `v0.10.2` |
-| `openclaw/` | （后续接入） | TBD |
+| 子目录 | 仓库 | 版本 | 技术栈 |
+|---|---|---|---|
+| `vllm/` | https://github.com/vllm-project/vllm | `v0.10.2` | Python (CUDA) |
+| `openclaw/` | https://github.com/openclaw/openclaw | `v2026.6.10` | TypeScript (Node/pnpm) |
 
 ## 运行 vLLM
 
 vLLM 含编译的 CUDA 算子，**不能直接 `python` 跑源码**。运行方式：
 
-- 推荐（预编译 wheel）：`pip install vllm==0.10.2`，再 `./scripts/start_vllm.sh`；
-- 如需魔改源码：`pip install -e third_party/vllm`（需 CUDA 工具链编译）。
+- 编译安装（editable，已封装）：`./scripts/build_vllm.sh`（在 `xirang` conda 环境编译 vLLM 0.10.2）；
+- 启动：`./scripts/start_vllm.sh`（默认 `/data/models/Qwen3-4B`）。
 
-源码 clone 在 `third_party/vllm/` 主要用于：阅读、对照版本、以及后期"接入 vLLM 内部"的魔改（见 `docs/design.md` 路线）。
+源码 clone 在 `third_party/vllm/` 用于：editable 安装、对照版本、以及后期"接入 vLLM 内部"的魔改（见 `docs/design.md` 路线）。
+
+## 运行 OpenClaw
+
+OpenClaw 是 TypeScript/pnpm monorepo，**不是 Python**。运行前置：
+
+- Node ≥ 22.19.0（本机当前 v20，需升级，建议用 nvm 或 `conda install -n xirang nodejs=22`）
+- pnpm 11.2.2（`corepack enable && corepack prepare pnpm@11.2.2 --activate`）
+- 构建：`cd third_party/openclaw && pnpm install && pnpm build`
+
+### 与 vLLM / XiRang 的对接
+
+OpenClaw **原生支持 vLLM provider**（`openai-completions` API，见 `third_party/openclaw/docs/providers/vllm.md`）。
+benchmark 的两个模式只差 `baseUrl`：
+
+| 模式 | OpenClaw 配置 `models.providers.vllm.baseUrl` |
+|---|---|
+| baseline (naive) | `http://127.0.0.1:8001/v1`（直连 vLLM） |
+| xirang | `http://127.0.0.1:8010/v1`（经 XiRang proxy） |
+
+OpenClaw 配置示例（`vllm` provider 指向 XiRang proxy，Qwen3 thinking）：
+
+```json5
+{
+  models: {
+    providers: {
+      vllm: {
+        baseUrl: "http://127.0.0.1:8010/v1",
+        apiKey: "${VLLM_API_KEY}",   // 任意非空值即可（本地无鉴权）
+        api: "openai-completions",
+        models: [
+          {
+            id: "/data/models/Qwen3-4B",   // 与 vLLM 启动 --model 一致
+            name: "Qwen3-4B (via XiRang)",
+            reasoning: true,
+            compat: { thinkingFormat: "qwen-chat-template" },
+            contextWindow: 8192,
+            maxTokens: 2048,
+          },
+        ],
+      },
+    },
+  },
+}
+```
 
 ## 模型
 

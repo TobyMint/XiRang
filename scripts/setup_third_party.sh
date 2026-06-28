@@ -21,8 +21,8 @@ clone_at() {
 # ---- vLLM v0.10.2 ----
 clone_at vllm https://github.com/vllm-project/vllm.git v0.10.2
 
-# ---- OpenClaw（后续接入时取消注释 / 填入实际仓库与版本）----
-# clone_at openclaw https://github.com/<org>/openclaw.git <tag-or-commit>
+# ---- OpenClaw v2026.6.10 (Agent 框架，TypeScript/pnpm monorepo) ----
+clone_at openclaw https://github.com/openclaw/openclaw.git v2026.6.10
 
 echo "[setup] done. third_party/:"
 ls -1 third_party

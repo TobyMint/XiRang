@@ -85,7 +85,8 @@ XiRang/
 │   ├── setup_third_party.sh      # 拉取外部仓库 (vllm/openclaw) 到 third_party/
 │   ├── start_vllm.sh / start_xirang.sh / run_all.sh
 ├── third_party/                  # 外部依赖仓库（gitignored，见 third_party/README.md）
-│   └── vllm/                     # vLLM v0.10.2 源码（由 setup_third_party.sh 拉取）
+│   ├── vllm/                     # vLLM v0.10.2 源码（由 setup_third_party.sh 拉取）
+│   └── openclaw/                 # OpenClaw v2026.6.10 Agent 框架（TypeScript）
 └── tests/
     ├── test_rewriter.py / test_lifecycle.py / test_budget.py
 ```

@@ -22,6 +22,22 @@ Agent 框架 (多轮/工具调用/分支)
 
 vLLM 等外部仓库统一放在顶层 `third_party/`（整目录 gitignore，由 `scripts/setup_third_party.sh` 按固定版本拉取），与 XiRang 自身代码物理隔离。后续接入 OpenClaw 时同样作为 `third_party/openclaw/` 一个子目录，不改动 XiRang 主结构。模型统一在 `/data/models/`（当前 `Qwen3-4B`），不纳入仓库。
 
+### 三方对接路径
+
+```
+OpenClaw (Agent, third_party/openclaw)
+   │  vllm provider (openai-completions)
+   ▼
+baseline:  直连 vLLM :8001            ← naive Agent + naive vLLM
+xirang:    经 XiRang proxy :8010      ← 加 XiRang 中间层
+   ▼
+vLLM (:8001) → Qwen3-4B
+```
+
+OpenClaw 原生支持 vLLM provider，两个 benchmark 模式仅 `models.providers.vllm.baseUrl` 不同
+（见 `third_party/README.md` 配置示例）。XiRang proxy 与 vLLM 都暴露 OpenAI 兼容 `/v1`，
+对 OpenClaw 透明。
+
 ## 2. v0 优化手段（全部在 proxy 侧，确定/近无损）
 
 | 手段 | 模块 | 解决的问题 |
